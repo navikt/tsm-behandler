@@ -9,7 +9,7 @@ dependencyResolutionManagement {
         maven { url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release") }
     }
     versionCatalogs {
-        create("ktorLibs").from("io.ktor:ktor-version-catalog:3.5.0")
+        create("ktorLibs").from("io.ktor:ktor-version-catalog:3.5.2")
         create("tsmKtorLibs").from("no.nav.tsm:ktor-version-catalog:${tsmKtorVersion}")
     }
 }
