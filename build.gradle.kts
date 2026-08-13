@@ -21,6 +21,7 @@ dependencies {
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
     implementation(libs.logback.classic)
+    implementation(libs.logback.encoder)
     implementation(tsmKtorLibs.core)
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
