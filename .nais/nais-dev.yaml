@@ -38,6 +38,7 @@ spec:
     scopes:
       consumes:
         - name: "nhn:hpr/export"
+        - name: "nhn:flr/export"
   accessPolicy:
     outbound:
       rules:
