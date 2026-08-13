@@ -1,11 +1,10 @@
 package no.nav.tsm.core
 
-import io.ktor.server.application.*
-import io.ktor.server.config.*
+import io.ktor.server.application.Application
+import io.ktor.server.config.getAs
 import no.nav.tsm.ktor.nais.RuntimeCluster
 import no.nav.tsm.ktor.nais.getRuntimeCluster
 import kotlin.String
-
 
 class Runtime(
     val name: String,
@@ -14,8 +13,7 @@ class Runtime(
 
 class Environment(
     val runtime: Runtime,
-    val hprExportUrl: String,
-)
+    val hprEndpoint: String)
 
 fun Application.initEnv() =
     Environment(
@@ -24,5 +22,6 @@ fun Application.initEnv() =
                 name = environment.config.property("app.name").getAs(),
                 env = getRuntimeCluster(),
             ),
-        hprExportUrl = environment.config.property("external.hprExportEndpoint").getAs()
-    )
+        hprEndpoint = environment.config.property("external.hprExportEndpoint").getAs()
+
+)
