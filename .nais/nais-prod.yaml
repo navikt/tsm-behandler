@@ -46,10 +46,13 @@ spec:
       rules:
         - application: syk-inn-api
         - application: syk-inn
+        - application: zara
     outbound:
       rules:
         - application: logging
           namespace: nais-system
+      external:
+        - host: api.offentlig.hpr.nhn.no
   env:
-    - name: HPR_EXPORT_URL
+    - name: HPR_EXPORT_ENDPOINT
       value: https://api.offentlig.hpr.nhn.no/v1/export

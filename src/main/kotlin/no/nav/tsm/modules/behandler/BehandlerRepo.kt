@@ -1,15 +1,15 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler
+package no.nav.tsm.modules.behandler
 
 import java.util.concurrent.atomic.AtomicReference
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.models.Behandler
 
 class BehandlerRepo() {
     private val logger = logger()
     private val behandlerFnrMap = AtomicReference<Map<String, Behandler>>()
     private val behandlerHprMap = AtomicReference<Map<String, Behandler>>()
 
-    fun hasData(): Boolean = behandlerHprMap.get().isNotEmpty()
+    fun hasData(): Boolean = behandlerHprMap.get()?.isNotEmpty() ?: false
 
     fun size(): Int = behandlerHprMap.get()?.size ?: 0
 

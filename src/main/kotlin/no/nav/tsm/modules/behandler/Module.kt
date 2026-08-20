@@ -1,12 +1,12 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler
+package no.nav.tsm.modules.behandler
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.*
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.no.nav.tsm.modules.behandler.api.registerBehandlerRoutes
-import no.nav.tsm.no.nav.tsm.modules.behandler.hpr.HprClient
-import kotlin.time.Duration.Companion.seconds
+import no.nav.tsm.modules.behandler.api.registerBehandlerRoutes
+import no.nav.tsm.modules.behandler.hpr.HprClient
 
 private val logger = logger()
 

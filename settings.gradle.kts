@@ -1,6 +1,5 @@
+val tsmKtorVersion = "1.2.10"
 rootProject.name = "tsm-behandler"
-
-val tsmKtorVersion = "1.2.7"
 
 pluginManagement {
     repositories {

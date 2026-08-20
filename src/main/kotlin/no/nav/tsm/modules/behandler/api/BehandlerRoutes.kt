@@ -1,4 +1,4 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler.api
+package no.nav.tsm.modules.behandler.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -12,9 +12,10 @@ import io.ktor.server.plugins.di.*
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
-import no.nav.tsm.ktor.auth.entra.entraMachineToken
-import no.nav.tsm.no.nav.tsm.modules.behandler.BehandlerRepo
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.ktor.auth.entra.entraBoth
+import no.nav.tsm.ktor.auth.entra.obo.onBehalfOfUserMaybe
+import no.nav.tsm.modules.behandler.BehandlerRepo
+import no.nav.tsm.modules.behandler.models.Behandler
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.KotlinFeature
@@ -60,9 +61,13 @@ fun Application.registerBehandlerRoutes() {
         install(ContentNegotiation) {
             register(ContentType.Application.Json, JacksonConverter(behandlerApiMapper))
         }
-        entraMachineToken {
+        entraBoth {
             post("api/behandler/search") {
                 val query = call.receive<BehandlerQuery>()
+                when (val user = call.onBehalfOfUserMaybe()) {
+                    null -> log.info("maskintoken")
+                    else -> log.info("behalf-of-user for user ${user.email}")
+                }
                 val behandler: Behandler? =
                     when (query) {
                         is BehandlerQuery.FnrQuery -> behandlerRepo.getbehandlerByFnr(query.id)

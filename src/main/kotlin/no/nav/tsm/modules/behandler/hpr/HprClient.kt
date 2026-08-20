@@ -1,23 +1,26 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler.hpr
+package no.nav.tsm.modules.behandler.hpr
 
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.jvm.javaio.*
+import java.util.zip.ZipInputStream
 import kotlinx.coroutines.flow.flow
+import no.nav.tsm.core.Environment
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.no.nav.tsm.core.Environment
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.behandlerObjectMapper
+import no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.models.behandlerObjectMapper
 import tools.jackson.core.JsonTokenId
 import tools.jackson.core.ObjectReadContext
 import tools.jackson.core.json.JsonFactory
-import java.util.zip.ZipInputStream
 
-class HprClient(private val texas: Texas, private val httpClient: HttpClient, environment: Environment,
-                private val hprUrl: String = environment.hprExportUrl
+class HprClient(
+    private val texas: Texas,
+    private val httpClient: HttpClient,
+    environment: Environment,
+    private val hprUrl: String = environment.hprExportUrl,
 ) {
     private val logger = logger()
     private val scope = "nhn:hpr/export"
