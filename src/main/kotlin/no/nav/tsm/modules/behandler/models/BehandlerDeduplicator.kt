@@ -1,4 +1,4 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler.models
+package no.nav.tsm.modules.behandler.models
 
 import java.time.LocalDate
 
@@ -55,6 +55,7 @@ class BehandlerDeduplicator {
         Periode(deduplicate(periode.fra), periode.til?.let { deduplicate(it) })
 
     private fun deduplicate(dato: LocalDate): LocalDate = dates.getOrPut(dato) { dato }
+
     private inline fun <T> List<T>.deduplicateEach(transform: (T) -> T): List<T> =
         if (isEmpty()) emptyList() else map(transform)
 }

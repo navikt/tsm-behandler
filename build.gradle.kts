@@ -29,7 +29,6 @@ dependencies {
     implementation(ktorLibs.client.apache5)
     implementation(ktorLibs.client.contentNegotiation)
     implementation(libs.logback.classic)
-    implementation(libs.logback.encoder)
     implementation(tsmKtorLibs.core)
     implementation(tsmKtorLibs.auth)
     implementation(libs.logback.encoder)

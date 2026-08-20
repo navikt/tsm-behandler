@@ -1,4 +1,4 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler.models
+package no.nav.tsm.modules.behandler.models
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDate

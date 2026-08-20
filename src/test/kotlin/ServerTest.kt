@@ -6,12 +6,12 @@ import io.ktor.server.plugins.di.*
 import io.ktor.server.testing.*
 import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.flow.flow
-import no.nav.tsm.module
-import no.nav.tsm.no.nav.tsm.modules.behandler.hpr.HprClient
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.flow.flow
+import no.nav.tsm.module
+import no.nav.tsm.modules.behandler.hpr.HprClient
+import no.nav.tsm.modules.behandler.models.Behandler
 
 class ServerTest {
 
@@ -20,9 +20,10 @@ class ServerTest {
         application.dependencies {
             provide {
                 mockk<HprClient>(relaxed = false).apply {
-                    every { getExport() } returns flow<Behandler> {
-                        emit(mockk<Behandler>(relaxed = true))
-                    }
+                    every { getExport() } returns
+                        flow<Behandler> {
+                            emit(mockk<Behandler>(relaxed = true))
+                        }
                 }
             }
         }

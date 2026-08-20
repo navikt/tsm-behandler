@@ -1,13 +1,13 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler
+package no.nav.tsm.modules.behandler
 
 import java.time.LocalDateTime
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.measureTimedValue
 import kotlinx.coroutines.*
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.no.nav.tsm.modules.behandler.hpr.HprClient
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.BehandlerDeduplicator
+import no.nav.tsm.modules.behandler.hpr.HprClient
+import no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.models.BehandlerDeduplicator
 
 class BehandlerJob(val behandlerRepo: BehandlerRepo, private val hprClient: HprClient) {
 

@@ -1,4 +1,4 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler.api
+package no.nav.tsm.modules.behandler.api
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonSubTypes
@@ -13,8 +13,8 @@ import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import no.nav.tsm.ktor.auth.entra.entraMachineToken
-import no.nav.tsm.no.nav.tsm.modules.behandler.BehandlerRepo
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.BehandlerRepo
+import no.nav.tsm.modules.behandler.models.Behandler
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.KotlinFeature

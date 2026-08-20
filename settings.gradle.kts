@@ -1,6 +1,5 @@
-rootProject.name = "tsm-behandler"
-
 val tsmKtorVersion = "1.2.7"
+rootProject.name = "tsm-behandler"
 
 pluginManagement {
     repositories {

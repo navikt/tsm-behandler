@@ -1,8 +1,8 @@
-package no.nav.tsm.no.nav.tsm.modules.behandler
+package no.nav.tsm.modules.behandler
 
 import java.util.concurrent.atomic.AtomicReference
 import no.nav.tsm.ktor.logger
-import no.nav.tsm.no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.models.Behandler
 
 class BehandlerRepo() {
     private val logger = logger()
