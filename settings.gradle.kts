@@ -1,6 +1,6 @@
 rootProject.name = "tsm-behandler"
 
-val tsmKtorVersion = "1.2.5"
+val tsmKtorVersion = "1.2.6"
 
 dependencyResolutionManagement {
     repositories {
