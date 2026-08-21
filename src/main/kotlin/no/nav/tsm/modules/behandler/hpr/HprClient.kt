@@ -5,8 +5,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.coroutines.Dispatchers
 import java.util.zip.ZipInputStream
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import no.nav.tsm.core.Environment
@@ -29,35 +29,41 @@ class HprClient(
 
     fun getExport() =
         flow<Behandler> {
-            val token = texas.maskinporten(scope).token
-            httpClient
-                .prepareGet(hprUrl) {
-                    bearerAuth(token)
-                }
-                .execute {
-                    if (it.status.isSuccess()) {
-                        ZipInputStream(it.bodyAsChannel().toInputStream()).use { zip ->
-                            try {
-                                while (zip.nextEntry != null) {
-                                    val jsonParser = JsonFactory().createParser(ObjectReadContext.empty(), zip)
-                                    while (jsonParser.nextToken() != null) {
-                                        if (jsonParser.currentToken().id() == JsonTokenId.ID_START_OBJECT) {
-                                            try {
-                                                emit(behandlerObjectMapper.readValue(jsonParser, Behandler::class.java))
-                                            } catch (e: Exception) {
-                                                logger.error("Error while parsing json", e)
+                val token = texas.maskinporten(scope).token
+                httpClient
+                    .prepareGet(hprUrl) {
+                        bearerAuth(token)
+                    }
+                    .execute {
+                        if (it.status.isSuccess()) {
+                            ZipInputStream(it.bodyAsChannel().toInputStream()).use { zip ->
+                                try {
+                                    while (zip.nextEntry != null) {
+                                        val jsonParser = JsonFactory().createParser(ObjectReadContext.empty(), zip)
+                                        while (jsonParser.nextToken() != null) {
+                                            if (jsonParser.currentToken().id() == JsonTokenId.ID_START_OBJECT) {
+                                                try {
+                                                    emit(
+                                                        behandlerObjectMapper.readValue(
+                                                            jsonParser,
+                                                            Behandler::class.java,
+                                                        )
+                                                    )
+                                                } catch (e: Exception) {
+                                                    logger.error("Error while parsing json", e)
+                                                }
                                             }
                                         }
                                     }
+                                } catch (cause: Throwable) {
+                                    logger.error("Error while parsing offentlig hpr api", cause)
                                 }
-                            } catch (cause: Throwable) {
-                                logger.error("Error while parsing offentlig hpr api", cause)
                             }
+                        } else {
+                            logger.error("Could not download data from hpr")
+                            throw RuntimeException("Could not download data from hpr")
                         }
-                    } else {
-                        logger.error("Could not download data from hpr")
-                        throw RuntimeException("Could not download data from hpr")
                     }
-                }
-        }.flowOn(Dispatchers.IO)
+            }
+            .flowOn(Dispatchers.IO)
 }

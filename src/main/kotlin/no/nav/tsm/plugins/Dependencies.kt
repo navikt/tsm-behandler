@@ -15,9 +15,9 @@ fun Application.configureDependencies() {
     }
 }
 
-private fun configureBaseHttpClient(): HttpClient = HttpClient(Apache5) {
-
-    install(HttpTimeout) {
-        connectTimeoutMillis = 60_000
+private fun configureBaseHttpClient(): HttpClient =
+    HttpClient(Apache5) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = 60_000
+        }
     }
-}
