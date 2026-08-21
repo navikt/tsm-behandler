@@ -5,8 +5,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.utils.io.jvm.javaio.*
+import kotlinx.coroutines.Dispatchers
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import no.nav.tsm.core.Environment
 import no.nav.tsm.ktor.auth.texas.Texas
 import no.nav.tsm.ktor.logger
@@ -40,7 +42,11 @@ class HprClient(
                                     val jsonParser = JsonFactory().createParser(ObjectReadContext.empty(), zip)
                                     while (jsonParser.nextToken() != null) {
                                         if (jsonParser.currentToken().id() == JsonTokenId.ID_START_OBJECT) {
-                                            emit(behandlerObjectMapper.readValue(jsonParser, Behandler::class.java))
+                                            try {
+                                                emit(behandlerObjectMapper.readValue(jsonParser, Behandler::class.java))
+                                            } catch (e: Exception) {
+                                                logger.error("Error while parsing json", e)
+                                            }
                                         }
                                     }
                                 }
@@ -53,5 +59,5 @@ class HprClient(
                         throw RuntimeException("Could not download data from hpr")
                     }
                 }
-        }
+        }.flowOn(Dispatchers.IO)
 }

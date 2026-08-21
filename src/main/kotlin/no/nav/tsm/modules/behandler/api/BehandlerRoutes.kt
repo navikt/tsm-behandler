@@ -14,6 +14,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.*
 import no.nav.tsm.ktor.auth.entra.entraBoth
 import no.nav.tsm.ktor.auth.entra.obo.onBehalfOfUserMaybe
+import no.nav.tsm.ktor.logger
 import no.nav.tsm.modules.behandler.BehandlerRepo
 import no.nav.tsm.modules.behandler.models.Behandler
 import tools.jackson.databind.DeserializationFeature
@@ -70,12 +71,21 @@ fun Application.registerBehandlerRoutes() {
                 }
                 val behandler: Behandler? =
                     when (query) {
-                        is BehandlerQuery.FnrQuery -> behandlerRepo.getbehandlerByFnr(query.id)
-                        is BehandlerQuery.HprQuery -> behandlerRepo.getbehandlerByHpr(query.id)
+                        is BehandlerQuery.FnrQuery -> {
+                            log.info("getting behandler from fnr")
+                            behandlerRepo.getbehandlerByFnr(query.id)
+                        }
+                        is BehandlerQuery.HprQuery -> {
+                            log.info("getting behandler from hpr")
+                            behandlerRepo.getbehandlerByHpr(query.id)
+                        }
                     }
+
                 if (behandler == null) {
+                    log.info("Behandler not found")
                     call.respond(HttpStatusCode.NotFound)
                 } else {
+                    log.info("Behandler found")
                     call.respond(behandler)
                 }
             }
