@@ -20,9 +20,20 @@ kotlin {
 dependencies {
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
+    implementation(ktorLibs.server.di)
+    implementation(ktorLibs.server.callId)
+    implementation(ktorLibs.server.contentNegotiation)
+    implementation(ktorLibs.serialization.jackson3)
+    implementation(ktorLibs.server.metrics.micrometer)
+    implementation(ktorLibs.client.core)
+    implementation(ktorLibs.client.apache5)
+    implementation(ktorLibs.client.contentNegotiation)
     implementation(libs.logback.classic)
-    implementation(libs.logback.encoder)
     implementation(tsmKtorLibs.core)
+    implementation(tsmKtorLibs.auth)
+    implementation(libs.logback.encoder)
+
+    testImplementation(libs.mockk)
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
 }

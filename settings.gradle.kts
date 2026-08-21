@@ -1,6 +1,16 @@
+val tsmKtorVersion = "1.2.10"
 rootProject.name = "tsm-behandler"
 
-val tsmKtorVersion = "1.2.6"
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
 
 dependencyResolutionManagement {
     repositories {
@@ -14,9 +24,3 @@ dependencyResolutionManagement {
     }
 }
 
-pluginManagement {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
-}
