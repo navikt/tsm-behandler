@@ -1,6 +1,6 @@
 [versions]
-kotlin = "2.4.0"
-logback = "1.5.35"
+kotlin = "2.4.10"
+logback = "1.6.3"
 logbackEncoder = "9.0"
 mockk = "1.14.11"
 
@@ -11,4 +11,4 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-spotless = { id = "com.diffplug.spotless", version = "8.9.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.10.0" }
