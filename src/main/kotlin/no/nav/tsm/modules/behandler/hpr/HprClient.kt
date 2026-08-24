@@ -16,7 +16,8 @@ import no.nav.tsm.modules.behandler.models.Behandler
 import no.nav.tsm.modules.behandler.models.behandlerObjectMapper
 import tools.jackson.core.JsonTokenId
 import tools.jackson.core.ObjectReadContext
-import tools.jackson.core.json.JsonFactory
+import tools.jackson.core.StreamReadFeature
+import tools.jackson.core.json.JsonFactoryBuilder
 
 class HprClient(
     private val texas: Texas,
@@ -26,6 +27,8 @@ class HprClient(
 ) {
     private val logger = logger()
     private val scope = "nhn:hpr/export"
+
+    private val jsonFactory = JsonFactoryBuilder().disable(StreamReadFeature.AUTO_CLOSE_SOURCE).build()
 
     fun getExport() =
         flow<Behandler> {
@@ -38,8 +41,9 @@ class HprClient(
                         if (it.status.isSuccess()) {
                             ZipInputStream(it.bodyAsChannel().toInputStream()).use { zip ->
                                 try {
+
                                     while (zip.nextEntry != null) {
-                                        val jsonParser = JsonFactory().createParser(ObjectReadContext.empty(), zip)
+                                        val jsonParser = jsonFactory.createParser(ObjectReadContext.empty(), zip)
                                         while (jsonParser.nextToken() != null) {
                                             if (jsonParser.currentToken().id() == JsonTokenId.ID_START_OBJECT) {
                                                 try {
