@@ -7,6 +7,20 @@ metadata:
     team: tsm
 
 spec:
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_17
+        name: tsm-behandler
+        cascadingDelete: false
+        databases:
+          - name: tsm-behandler
+            envVarPrefix: DB
+        diskAutoresize: true
+        highAvailability: true
+        diskType: SSD
+        insights:
+          enabled: true
+        tier: db-custom-1-3840
   port: 8080
   replicas:
     min: 1
