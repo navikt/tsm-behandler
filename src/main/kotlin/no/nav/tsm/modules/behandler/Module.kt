@@ -4,13 +4,19 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.*
+import no.nav.tsm.ktor.di.dynamicDependencies
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.modules.behandler.api.registerBehandlerRoutes
 import no.nav.tsm.modules.behandler.hpr.HprClient
+import no.nav.tsm.modules.behandler.hpr.HprTokenClient
 
 private val logger = logger()
 
 fun Application.configureBehandlerModule() {
+    dynamicDependencies {
+        local { provide(HprTokenClient.Local::class) }
+        cloud { provide(HprTokenClient.Remote::class) }
+    }
 
     dependencies {
         provide(HprClient::class)

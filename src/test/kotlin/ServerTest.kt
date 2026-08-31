@@ -4,33 +4,33 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.plugins.di.*
 import io.ktor.server.testing.*
-import io.mockk.every
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlinx.coroutines.flow.flow
-import no.nav.tsm.module
-import no.nav.tsm.modules.behandler.hpr.HprClient
-import no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.BehandlerRepo
+import no.nav.tsm.plugins.configureMonitoring
 
 class ServerTest {
 
+    private fun ApplicationTestBuilder.monitoringWithData(dataAvailable: Boolean) = application {
+        dependencies { provide<BehandlerRepo> { mockk { coEvery { hasData() } returns dataAvailable } } }
+        configureMonitoring()
+    }
+
     @Test
-    fun `test root endpoint`() = testApplication {
-        application.dependencies {
-            provide {
-                mockk<HprClient>(relaxed = false).apply {
-                    every { getExport() } returns
-                        flow<Behandler> {
-                            emit(mockk<Behandler>(relaxed = true))
-                        }
-                }
-            }
-        }
-        application.module()
-        startApplication()
-        // verify server root returns 200
+    fun `ready responds 200 when data exists`() = testApplication {
+        monitoringWithData(dataAvailable = true)
+
         assertEquals(HttpStatusCode.OK, client.get("/internal/health/alive").status)
         assertEquals(HttpStatusCode.OK, client.get("/internal/health/ready").status)
+    }
+
+    @Test
+    fun `ready does not respond 200 before first import is finished`() = testApplication {
+        monitoringWithData(dataAvailable = false)
+
+        assertEquals(HttpStatusCode.OK, client.get("/internal/health/alive").status)
+        assertEquals(HttpStatusCode.InternalServerError, client.get("/internal/health/ready").status)
     }
 }

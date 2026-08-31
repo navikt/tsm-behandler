@@ -1,29 +1,130 @@
 package no.nav.tsm.modules.behandler
 
-import java.util.concurrent.atomic.AtomicReference
-import no.nav.tsm.ktor.logger
+import java.sql.Connection
+import java.time.OffsetDateTime
+import java.util.concurrent.atomic.AtomicBoolean
+import javax.sql.DataSource
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.withContext
+import no.nav.tsm.modules.behandler.db.HprBehandlerTable
+import no.nav.tsm.modules.behandler.db.normaliserHprNummer
 import no.nav.tsm.modules.behandler.models.Behandler
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.intLiteral
+import org.jetbrains.exposed.v1.core.less
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.batchUpsert
+import org.jetbrains.exposed.v1.jdbc.deleteWhere
+import org.jetbrains.exposed.v1.jdbc.select
+import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
-class BehandlerRepo() {
-    private val logger = logger()
-    private val behandlerFnrMap = AtomicReference<Map<String, Behandler>>()
-    private val behandlerHprMap = AtomicReference<Map<String, Behandler>>()
-
-    fun hasData(): Boolean = behandlerHprMap.get()?.isNotEmpty() ?: false
-
-    fun size(): Int = behandlerHprMap.get()?.size ?: 0
-
-    fun updateData(hprMap: Map<String, Behandler>, fnrMap: Map<String, Behandler>) {
-        logger.info("Replacing hpr data")
-        behandlerFnrMap.set(fnrMap)
-        behandlerHprMap.set(hprMap)
+class BehandlerRepo(
+    private val database: Database,
+    private val dataSource: DataSource,
+) {
+    private companion object {
+        const val IMPORT_LOCK_ID = 13_69_420_37L
     }
 
-    fun getbehandlerByFnr(fnr: String): Behandler? {
-        return behandlerFnrMap.get()?.get(fnr)
+    private val hasData = AtomicBoolean(false)
+
+    suspend fun <T> tryWithImportLock(block: suspend () -> T): T? {
+        val connection = dataSource.connection
+        try {
+            val lock = withContext(Dispatchers.IO) { connection.tryAcquireImportLock() }
+            if (!lock) return null
+            try {
+                return block()
+            } finally {
+                withContext(NonCancellable + Dispatchers.IO) { connection.releaseImportLock() }
+            }
+        } finally {
+            withContext(NonCancellable + Dispatchers.IO) { connection.close() }
+        }
     }
 
-    fun getbehandlerByHpr(hpr: String): Behandler? {
-        return behandlerHprMap.get()?.get(hpr)
+    private fun Connection.tryAcquireImportLock(): Boolean =
+        prepareStatement("select pg_try_advisory_lock(?)").use { statement ->
+            statement.setLong(1, IMPORT_LOCK_ID)
+            statement.executeQuery().use { rs -> rs.next() && rs.getBoolean(1) }
+        }
+
+    private fun Connection.releaseImportLock() {
+        prepareStatement("select pg_advisory_unlock(?)").use { statement ->
+            statement.setLong(1, IMPORT_LOCK_ID)
+            statement.executeQuery().close()
+        }
     }
+
+    suspend fun hasData(): Boolean {
+        if (hasData.get()) return true
+
+        val data =
+            withContext(Dispatchers.IO) {
+                transaction(db = database, readOnly = true) {
+                    HprBehandlerTable.select(intLiteral(1)).limit(1).firstOrNull() != null
+                }
+            }
+
+        if (data) {
+            hasData.set(true)
+        }
+        return data
+    }
+
+    suspend fun getBehandlerByHpr(hpr: String): Behandler? =
+        withContext(Dispatchers.IO) {
+            transaction(db = database, readOnly = true) {
+                HprBehandlerTable.selectAll()
+                    .where { HprBehandlerTable.hprNummer eq normaliserHprNummer(hpr) }
+                    .limit(1)
+                    .firstOrNull()
+                    ?.get(HprBehandlerTable.data)
+            }
+        }
+
+    suspend fun getBehandlerByFnr(fnr: String): Behandler? =
+        withContext(Dispatchers.IO) {
+            transaction(db = database, readOnly = true) {
+                HprBehandlerTable.selectAll()
+                    .where { HprBehandlerTable.fnr eq fnr }
+                    .orderBy(HprBehandlerTable.sistOppdatert, SortOrder.DESC)
+                    .limit(1)
+                    .firstOrNull()
+                    ?.get(HprBehandlerTable.data)
+            }
+        }
+
+    suspend fun saveAll(
+        behandlers: List<Behandler>,
+        importStart: OffsetDateTime,
+    ) {
+        if (behandlers.isEmpty()) return
+        withContext(Dispatchers.IO) {
+            transaction(db = database) {
+                HprBehandlerTable.batchUpsert(
+                    behandlers,
+                    HprBehandlerTable.hprNummer,
+                    shouldReturnGeneratedValues = false,
+                ) { behandler ->
+                    this[HprBehandlerTable.hprNummer] = normaliserHprNummer(behandler.hprNummer)
+                    this[HprBehandlerTable.fnr] = behandler.person.nin
+                    this[HprBehandlerTable.sistOppdatert] = behandler.sistOppdatert
+                    this[HprBehandlerTable.suspendert] = false // TODO: FIX need to check AdministrativReaksjon on behandler
+                    this[HprBehandlerTable.data] = behandler
+                    this[HprBehandlerTable.oppdatert] = importStart
+                }
+            }
+        }
+    }
+
+    suspend fun deleteRemoved(importStart: OffsetDateTime): Int =
+        withContext(Dispatchers.IO) {
+            transaction(db = database) {
+                HprBehandlerTable.deleteWhere { oppdatert less importStart }
+            }
+        }
 }

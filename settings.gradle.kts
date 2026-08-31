@@ -1,4 +1,6 @@
 val tsmKtorVersion = "1.3.0"
+val exposedVersion = "1.4.0"
+val ktorVersion = "3.5.2"
 rootProject.name = "tsm-behandler"
 
 pluginManagement {
@@ -19,8 +21,9 @@ dependencyResolutionManagement {
         maven { url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release") }
     }
     versionCatalogs {
-        create("ktorLibs").from("io.ktor:ktor-version-catalog:3.5.2")
+        create("ktorLibs").from("io.ktor:ktor-version-catalog:${ktorVersion}")
         create("tsmKtorLibs").from("no.nav.tsm:ktor-version-catalog:${tsmKtorVersion}")
+        create("exposedLibs").from("org.jetbrains.exposed:exposed-version-catalog:${exposedVersion}")
     }
 }
 
