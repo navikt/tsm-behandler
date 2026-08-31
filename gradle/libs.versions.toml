@@ -3,12 +3,22 @@ kotlin = "2.4.10"
 logback = "1.6.3"
 logbackEncoder = "9.0"
 mockk = "1.14.11"
+postgres = "42.7.13"
+flyway = "13.2.0"
+hikari = "7.1.0"
+testcontainers = "2.0.5"
 
 [libraries]
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 
+# Database stuff
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgres" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-postgres = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 spotless = { id = "com.diffplug.spotless", version = "8.10.0" }

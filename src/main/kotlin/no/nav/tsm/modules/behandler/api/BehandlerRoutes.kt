@@ -71,11 +71,11 @@ fun Application.registerBehandlerRoutes() {
                     when (query) {
                         is BehandlerQuery.FnrQuery -> {
                             log.info("getting behandler from fnr")
-                            behandlerRepo.getbehandlerByFnr(query.id)
+                            behandlerRepo.getBehandlerByFnr(query.id)
                         }
                         is BehandlerQuery.HprQuery -> {
                             log.info("getting behandler from hpr")
-                            behandlerRepo.getbehandlerByHpr(query.id)
+                            behandlerRepo.getBehandlerByHpr(query.id)
                         }
                     }
 

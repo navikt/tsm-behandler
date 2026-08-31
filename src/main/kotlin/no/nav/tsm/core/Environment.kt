@@ -13,6 +13,14 @@ class Runtime(
 class Environment(
     val runtime: Runtime,
     val hprExportUrl: String,
+    val postgres: PostgresConfig,
+)
+
+class PostgresConfig(
+    val jdbc: String,
+    val username: String,
+    val password: String,
+    val schema: String,
 )
 
 fun Application.initEnv() =
@@ -23,4 +31,11 @@ fun Application.initEnv() =
                 env = getRuntimeCluster(),
             ),
         hprExportUrl = environment.config.property("external.hprExportEndpoint").getAs(),
+        postgres =
+            PostgresConfig(
+                jdbc = environment.config.property("postgres.jdbc").getString(),
+                username = environment.config.property("postgres.username").getString(),
+                password = environment.config.property("postgres.password").getString(),
+                schema = environment.config.property("postgres.schema").getString(),
+            ),
     )

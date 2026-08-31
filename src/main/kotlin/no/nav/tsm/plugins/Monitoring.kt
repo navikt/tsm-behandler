@@ -11,9 +11,7 @@ fun Application.configureMonitoring() {
         ready {
             check("Data available") {
                 try {
-                    val r = behandlerService.hasData()
-                    println("has data $r")
-                    r
+                    behandlerService.hasData()
                 } catch (ex: Exception) {
                     log.error(ex.message, ex)
                     false

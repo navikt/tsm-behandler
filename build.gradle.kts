@@ -1,5 +1,4 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
-import org.gradle.kotlin.dsl.configure
 
 plugins {
     alias(libs.plugins.kotlin.jvm)
@@ -33,9 +32,21 @@ dependencies {
     implementation(tsmKtorLibs.auth)
     implementation(libs.logback.encoder)
 
+
+    // Database and such
+    implementation(libs.flyway.postgres)
+    implementation(libs.flyway.core)
+    implementation(libs.postgresql)
+    implementation(libs.hikaricp)
+    implementation(exposedLibs.core)
+    implementation(exposedLibs.jdbc)
+    implementation(exposedLibs.json)
+    implementation(exposedLibs.java.time)
+
     testImplementation(libs.mockk)
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
+    testImplementation(libs.testcontainers.postgresql)
 }
 
 tasks {
@@ -60,6 +71,10 @@ tasks {
     }
 }
 
+tasks.register<Exec>("preRunLocal") {
+    group = "application"
+    commandLine("./scripts/pre-dev.sh")
+}
 tasks.register<JavaExec>("runLocal") {
     group = "application"
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -67,4 +82,5 @@ tasks.register<JavaExec>("runLocal") {
 
     args("-config=application-local.conf")
     jvmArgs("-Dio.ktor.development=true", "-Dlogback.configurationFile=logback-local.xml")
+    dependsOn("preRunLocal")
 }

@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: tsm-behandler-copose-container
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: tsm-behandler
+    ports:
+      - '7971:5432'
