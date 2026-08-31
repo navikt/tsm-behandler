@@ -51,7 +51,7 @@ class BehandlerJob(private val behandlerRepo: BehandlerRepo, private val hprClie
                     val speed =
                         when (duration) {
                             0L -> ""
-                        else -> read.get() / duration
+                        else -> written.get() / duration
                         }
                     logger.info("read: ${read.get()}, written: ${written.get()}, speed $speed")
                     delay(1.seconds)
