@@ -4,7 +4,7 @@ logback = "1.6.3"
 logbackEncoder = "9.0"
 mockk = "1.14.11"
 postgres = "42.7.13"
-flyway = "13.2.0"
+flyway = "13.4.0"
 hikari = "7.1.0"
 testcontainers = "2.0.5"
 
@@ -21,4 +21,4 @@ hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 testcontainers-postgresql = { module = "org.testcontainers:testcontainers-postgresql", version.ref = "testcontainers" }
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-spotless = { id = "com.diffplug.spotless", version = "8.10.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.10.1" }
