@@ -1,9 +1,12 @@
 package no.nav.tsm.modules.behandler
 
 import java.sql.Connection
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.sql.DataSource
+import kotlin.collections.any
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
@@ -20,6 +23,8 @@ import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+
+private val SUSPENSJONS_VERDIER = setOf("5", "8")
 
 class BehandlerRepo(
     private val database: Database,
@@ -113,12 +118,21 @@ class BehandlerRepo(
                     this[HprBehandlerTable.hprNummer] = normaliserHprNummer(behandler.hprNummer)
                     this[HprBehandlerTable.fnr] = behandler.person.nin
                     this[HprBehandlerTable.sistOppdatert] = behandler.sistOppdatert
-                    this[HprBehandlerTable.suspendert] = false // TODO: FIX need to check AdministrativReaksjon on behandler
+                    this[HprBehandlerTable.suspendert] = isSuspendertNow(behandler)
                     this[HprBehandlerTable.data] = behandler
                     this[HprBehandlerTable.oppdatert] = importStart
                 }
             }
         }
+    }
+
+    private fun isSuspendertNow(behandler: Behandler): Boolean {
+        val currentDate = LocalDate.now(ZoneId.of("Europe/Oslo"))
+        return behandler.administrativeReaksjoner
+            .filter { SUSPENSJONS_VERDIER.contains(it.type.verdi) }
+            .any {
+                currentDate in it.periode.fra..it.periode.til
+            }
     }
 
     suspend fun deleteRemoved(importStart: OffsetDateTime): Int =

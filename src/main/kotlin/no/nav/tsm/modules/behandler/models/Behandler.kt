@@ -34,12 +34,17 @@ data class Godkjenning(
 
 data class AdministrativReaksjon(
     val type: Type,
-    val periode: Periode,
+    val periode: ReaksjonsPeriode,
 )
 
 data class Tilleggskompetanse(
     val type: Type,
     val periode: Periode,
+)
+
+data class ReaksjonsPeriode(
+    val fra: LocalDate,
+    val til: LocalDate,
 )
 
 data class Type(
