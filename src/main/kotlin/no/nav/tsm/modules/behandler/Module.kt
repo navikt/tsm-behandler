@@ -9,6 +9,7 @@ import no.nav.tsm.ktor.logger
 import no.nav.tsm.modules.behandler.api.registerBehandlerRoutes
 import no.nav.tsm.modules.behandler.hpr.HprClient
 import no.nav.tsm.modules.behandler.hpr.HprTokenClient
+import no.nav.tsm.modules.behandler.service.BehandlerService
 
 private val logger = logger()
 
@@ -21,6 +22,7 @@ fun Application.configureBehandlerModule() {
     dependencies {
         provide(HprClient::class)
         provide(BehandlerRepo::class)
+        provide(BehandlerService::class)
         provide(BehandlerJob::class)
     }
 
