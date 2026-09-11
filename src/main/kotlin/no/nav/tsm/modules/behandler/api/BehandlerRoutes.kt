@@ -13,8 +13,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import no.nav.tsm.ktor.auth.entra.entraBoth
 import no.nav.tsm.ktor.auth.entra.obo.onBehalfOfUserMaybe
-import no.nav.tsm.modules.behandler.BehandlerRepo
-import no.nav.tsm.modules.behandler.models.Behandler
+import no.nav.tsm.modules.behandler.api.models.TsmBehandler
+import no.nav.tsm.modules.behandler.service.BehandlerService
 import tools.jackson.databind.DeserializationFeature
 import tools.jackson.databind.json.JsonMapper
 import tools.jackson.module.kotlin.KotlinFeature
@@ -54,7 +54,7 @@ sealed interface BehandlerQuery {
 }
 
 fun Application.registerBehandlerRoutes() {
-    val behandlerRepo: BehandlerRepo by dependencies
+    val behandlerRepo: BehandlerService by dependencies
 
     routing {
         install(ContentNegotiation) {
@@ -67,7 +67,7 @@ fun Application.registerBehandlerRoutes() {
                     null -> log.info("maskintoken")
                     else -> log.info("behalf-of-user for user ${user.email}")
                 }
-                val behandler: Behandler? =
+                val behandler: TsmBehandler? =
                     when (query) {
                         is BehandlerQuery.FnrQuery -> {
                             log.info("getting behandler from fnr")
