@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.ktor.http.*
 import io.ktor.serialization.jackson3.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.jwt.JWTPrincipal
+import io.ktor.server.auth.principal
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
@@ -64,17 +66,17 @@ fun Application.registerBehandlerRoutes() {
             post("api/behandler/search") {
                 val query = call.receive<BehandlerQuery>()
                 when (val user = call.onBehalfOfUserMaybe()) {
-                    null -> log.info("maskintoken")
+                    null -> log.info("application-user for ${call.getAzp()}")
                     else -> log.info("behalf-of-user for user ${user.email}")
                 }
                 val behandler: TsmBehandler? =
                     when (query) {
                         is BehandlerQuery.FnrQuery -> {
-                            log.info("getting behandler from fnr")
+                            log.info("getting behandler from ident")
                             behandlerRepo.getBehandlerByFnr(query.id)
                         }
                         is BehandlerQuery.HprQuery -> {
-                            log.info("getting behandler from hpr")
+                            log.info("getting behandler from hpr ${query.id}")
                             behandlerRepo.getBehandlerByHpr(query.id)
                         }
                     }
@@ -83,10 +85,14 @@ fun Application.registerBehandlerRoutes() {
                     log.info("Behandler not found")
                     call.respond(HttpStatusCode.NotFound)
                 } else {
-                    log.info("Behandler found")
+                    log.info("Behandler found ${behandler.hpr}")
                     call.respond(behandler)
                 }
             }
         }
     }
+}
+
+private fun RoutingCall.getAzp(): String? {
+    return principal<JWTPrincipal>()?.get("azp_name")
 }
