@@ -50,17 +50,12 @@ data class Godkjenning(
 
 data class AdministrativReaksjon(
     val type: Type,
-    val periode: ReaksjonsPeriode,
+    val periode: Periode,
 )
 
 data class Tilleggskompetanse(
     val type: Type,
     val periode: Periode,
-)
-
-data class ReaksjonsPeriode(
-    val fra: LocalDate,
-    val til: LocalDate,
 )
 
 data class Type(
@@ -123,6 +118,6 @@ fun Behandler.isSuspendert(date: LocalDate = LocalDate.now(ZoneId.of("Europe/Osl
     return administrativeReaksjoner
         .filter { GODKJENNING_SUSPENSJONS_VERDIER.contains(it.type.verdi) }
         .any {
-            date in it.periode.fra..it.periode.til
+            date in it.periode.fra..(it.periode.til?:date)
         }
 }
