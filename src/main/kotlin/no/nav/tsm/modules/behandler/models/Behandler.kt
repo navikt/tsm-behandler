@@ -118,6 +118,6 @@ fun Behandler.isSuspendert(date: LocalDate = LocalDate.now(ZoneId.of("Europe/Osl
     return administrativeReaksjoner
         .filter { GODKJENNING_SUSPENSJONS_VERDIER.contains(it.type.verdi) }
         .any {
-            date in it.periode.fra..(it.periode.til?:date)
+            date in it.periode.fra..(it.periode.til ?: date)
         }
 }
