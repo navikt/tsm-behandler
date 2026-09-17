@@ -1,5 +1,5 @@
 val tsmKtorVersion = "1.3.0"
-val exposedVersion = "1.4.0"
+val exposedVersion = "1.5.0"
 val ktorVersion = "3.5.2"
 rootProject.name = "tsm-behandler"
 
