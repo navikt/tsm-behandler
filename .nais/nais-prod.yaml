@@ -27,10 +27,10 @@ spec:
     max: 5
   resources:
     requests:
-      cpu: 100m
-      memory: 1Gi
+      cpu: 150m
+      memory: 1500Mi
     limits:
-      memory: 2Gi
+      memory: 3Gi
 
   liveness:
     path: /internal/health/alive
