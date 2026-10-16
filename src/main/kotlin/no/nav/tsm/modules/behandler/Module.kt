@@ -42,18 +42,22 @@ fun Application.configureBehandlerModule() {
 
     monitor.subscribe(ApplicationStopPreparing) {
         runBlocking {
-            try {
-                logger.info("event: $ApplicationStopPreparing")
+            logger.info("event: $ApplicationStopPreparing")
+            behandlerJob.stop()
+            val job = job ?: return@runBlocking
 
-                behandlerJob.stop()
-                withTimeout(5.seconds) {
-                    job?.join()
-                    logger.info("job is joined")
-                }
-            } catch (e: Exception) {
-                logger.error("Could not stop behandlerJob gracefully", e)
-                scope.cancel()
+            val joined = withTimeoutOrNull(5.seconds) { job.join() } != null
+            if (joined) {
+                logger.info("job is joined")
+                return@runBlocking
             }
+
+            logger.warn("behandlerJob did not stop within 5s, cancelling running import")
+            val cancelled = withTimeoutOrNull(5.seconds) { job.cancelAndJoin() } != null
+            if (!cancelled) {
+                logger.error("behandlerJob did not respond to cancellation within 5s")
+            }
+            scope.cancel()
         }
     }
 }
