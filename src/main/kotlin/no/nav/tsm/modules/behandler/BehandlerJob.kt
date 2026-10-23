@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import no.nav.tsm.ktor.logger
 import no.nav.tsm.modules.behandler.hpr.HprClient
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BehandlerJob(private val behandlerRepo: BehandlerRepo, private val hprClient: HprClient) {
 
     private companion object {

@@ -40,9 +40,12 @@ fun Application.configureBehandlerModule() {
         }
     }
 
-    monitor.subscribe(ApplicationStopPreparing) {
+    var stopped = false
+    fun stopBehandlerJob(event: String) {
+        if (stopped) return
+        stopped = true
         runBlocking {
-            logger.info("event: $ApplicationStopPreparing")
+            logger.info("event: $event")
             behandlerJob.stop()
             val job = job ?: return@runBlocking
 
@@ -60,4 +63,7 @@ fun Application.configureBehandlerModule() {
             scope.cancel()
         }
     }
+
+    monitor.subscribe(ApplicationStopPreparing) { stopBehandlerJob("ApplicationStopPreparing") }
+    monitor.subscribe(ApplicationStopping) { stopBehandlerJob("ApplicationStopping") }
 }
