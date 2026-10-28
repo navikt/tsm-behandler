@@ -39,5 +39,5 @@ private fun createHikariDataSource(postgresConfig: PostgresConfig) =
             connectionTimeout = 5.seconds.inWholeMilliseconds
             idleTimeout = 10.minutes.inWholeMilliseconds
             maxLifetime = 30.minutes.inWholeMilliseconds
-        }
+        },
     )

@@ -14,8 +14,11 @@ application {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain {
+        languageVersion.set(libs.versions.jvmVersion.map { JavaLanguageVersion.of(it) })
+    }
 }
+
 dependencies {
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
@@ -62,7 +65,7 @@ tasks {
 
     configure<SpotlessExtension> {
         kotlin {
-            ktfmt("0.64").kotlinlangStyle().configure {
+            ktfmt(libs.versions.ktfmt.get()).kotlinlangStyle().configure {
                 it.setMaxWidth(120)
                 it.setContinuationIndent(4)
             }
@@ -71,18 +74,21 @@ tasks {
             dependsOn("spotlessApply")
         }
     }
-}
 
-tasks.register<Exec>("preRunLocal") {
-    group = "application"
-    commandLine("./scripts/pre-dev.sh")
-}
-tasks.register<JavaExec>("runLocal") {
-    group = "application"
-    mainClass.set("io.ktor.server.netty.EngineMain")
-    classpath = sourceSets["main"].runtimeClasspath
+    register<Exec>("preRunLocal") {
+        description = "running application local"
+        group = "application"
+        commandLine("./scripts/pre-dev.sh")
+    }
 
-    args("-config=application-local.conf")
-    jvmArgs("-Dio.ktor.development=true", "-Dlogback.configurationFile=logback-local.xml")
-    dependsOn("preRunLocal")
+    register<JavaExec>("runLocal") {
+        description = "Running application locally"
+        group = "application"
+        mainClass.set("io.ktor.server.netty.EngineMain")
+        classpath = sourceSets["main"].runtimeClasspath
+
+        args("-config=application-local.conf")
+        jvmArgs("-Dio.ktor.development=true", "-Dlogback.configurationFile=logback-local.xml")
+        dependsOn("preRunLocal")
+    }
 }

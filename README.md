@@ -1,48 +1,72 @@
 # tsm-behandler
 
-## Teknologi
+## Technologies used
+* Kotlin
+* Ktor
+* Gradle
 
-- Kotlin 2.4 / JVM 21
-- Ktor 3.5 (Netty, `EngineMain`)
-- Gradle med versjonskatalog (`gradle/libs.versions.toml` + eksterne kataloger `ktorLibs` og `tsmKtorLibs`)
-- Logback for logging
-- `no.nav.tsm:ktor-core` (`NaisMonitoring`) for helsesjekker, metrikker og shutdown
+## Requirements for developing the application
+#### Java
+Make sure you have the Java JDK 25 installed
+You can check which version you have installed using this command:
+``` bash
+java -version
+```
+or install it: https://sdkman.io/
 
-## Kom i gang
+#### Docker
+Make sure you have docker installed using this command:
+You can check which version you have installed using this command:
+``` bash
+docker --version
+```
+or install it: https://docs.docker.com/engine/install/
 
-Java 21 kreves. Med [mise](https://mise.jdx.dev/) installeres riktig JDK automatisk:
+#### Docker Compose
+Make sure you have docker compose installed using this command:
+You can check which version you have installed using this command:
+``` bash
+docker compose version
+```
+or install it: https://docs.docker.com/compose/install/
 
-```sh
-mise install
+## Building the application
+To build the application locally and run tests you can simply run
+``` bash
+./gradlew clean build
+ ```
+
+### Running the application locally
+Run in development to enable hot reloading and stubbed external dependencies:
+
+#### With Gradle and Docker Compose
+
+``` bash
+./gradlew runLocal
 ```
 
-### Bygg og kjør
+#### With IntelliJ
 
-| Kommando              | Beskrivelse                                                  |
-|-----------------------|--------------------------------------------------------------|
-| `./gradlew test`      | Kjør testene                                                  |
-| `./gradlew build`     | Bygg prosjektet                                               |
-| `./gradlew runLocal`  | Kjør lokalt med `application-local.conf` og `logback-local.xml` |
-| `./gradlew run`       | Kjør med produksjonskonfigurasjon (krever NAIS-miljøvariabler) |
+In IntelliJ go to the run the main function,
+then "Modify Run configuration..."
+then add `-Dio.ktor.development=true -config=application-local.conf` to the "Program arguments".
 
-`runLocal` for å kjøre localt.
+### Upgrading the Gradle wrapper version to latest
+``` bash
+./gradlew :wrapper --gradle-version latest
+```
 
-## Endepunkter
+## Contributing
 
-Applikasjonen lytter på port `8080`. Interne endepunkter kommer fra `NaisMonitoring`:
+To get started, fork the repository and create a new branch.
 
-| Sti                      | Beskrivelse                          |
-|--------------------------|--------------------------------------|
-| `/internal/health/alive` | Liveness-probe                       |
-| `/internal/health/ready` | Readiness-probe                      |
-| `/internal/metrics`      | Prometheus-metrikker                 |
-| `/internal/shutdown`     | preStopHook for grasiøs nedstengning |
+See details in [CONTRIBUTING.md](CONTRIBUTING.md)
 
-## Konfigurasjon
+### Contact
 
-| Fil                                       | Brukes av                        |
-|-------------------------------------------|----------------------------------|
-| `src/main/resources/application.conf`      | NAIS (dev-gcp / prod-gcp)        |
-| `src/main/resources/application-local.conf`| Lokal kjøring via `runLocal`     |
-| `src/main/resources/logback.xml`           | Logging på NAIS (JSON)           |
-| `src/main/resources/logback-local.xml`     | Logging lokalt                   |
+This project is maintained by [navikt/tsm](CODEOWNERS)
+
+Questions and/or feature requests? Please create an [issue](https://github.com/navikt/tsm-behandler/issues)
+
+If you work in [@navikt](https://github.com/navikt) you can reach us at the Slack
+channel [#team-symfoni](https://nav-it.slack.com/archives/C07MY3KCDS5)

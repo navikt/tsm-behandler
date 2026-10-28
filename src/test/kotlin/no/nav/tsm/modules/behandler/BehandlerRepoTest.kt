@@ -33,7 +33,7 @@ class BehandlerRepoTest {
                     username = container.username
                     password = container.password
                     maximumPoolSize = 5
-                }
+                },
             )
         private val database = Database.connect(dataSource)
     }

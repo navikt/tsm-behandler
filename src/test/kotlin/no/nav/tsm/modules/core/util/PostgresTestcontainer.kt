@@ -17,7 +17,7 @@ class PostgresTestcontainer {
                     username = username,
                     password = password,
                     schema = "public",
-                )
+                ),
             )
             .migrate()
     }

@@ -75,7 +75,7 @@ class BehandlerJob(private val behandlerRepo: BehandlerRepo, private val hprClie
             val deleted = behandlerRepo.deleteRemoved(importStart)
 
             logger.info(
-                "Import finished: read=${read.get()} written=${written.get()} deleted=$deleted elapsed=$elapsed"
+                "Import finished: read=${read.get()} written=${written.get()} deleted=$deleted elapsed=$elapsed",
             )
         } finally {
             logjob.cancel()
