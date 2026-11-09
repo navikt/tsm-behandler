@@ -32,6 +32,7 @@ class BehandlerService(private val behandlerRepo: BehandlerRepo, private val hpr
             log.info("hprNumber $hprNummer does not have an ident in hpr")
             return null
         }
+        log.info("Updated behandler ${updatedBehandler.hprNummer}")
         behandlerRepo.save(updatedBehandler)
         return updatedBehandler.toTsmBehandler()
     }
