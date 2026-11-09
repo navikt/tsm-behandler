@@ -53,6 +53,7 @@ spec:
     enabled: true
     scopes:
       consumes:
+        - name: "nhn:hpr/extended"
         - name: "nhn:hpr/export"
         - name: "nhn:flr/export"
   accessPolicy:
@@ -70,4 +71,4 @@ spec:
         - host: api.offentlig.hpr.nhn.no
   env:
     - name: HPR_EXPORT_ENDPOINT
-      value: https://api.offentlig.hpr.nhn.no/v1/export
+      value: https://api.offentlig.hpr.nhn.no

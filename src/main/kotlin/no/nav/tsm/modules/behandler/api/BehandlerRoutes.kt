@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.ktor.http.*
 import io.ktor.serialization.jackson3.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.jwt.JWTPrincipal
-import io.ktor.server.auth.principal
+import io.ktor.server.auth.*
+import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
@@ -56,7 +56,7 @@ sealed interface BehandlerQuery {
 }
 
 fun Application.registerBehandlerRoutes() {
-    val behandlerRepo: BehandlerService by dependencies
+    val behandlerService: BehandlerService by dependencies
 
     routing {
         install(ContentNegotiation) {
@@ -72,10 +72,10 @@ fun Application.registerBehandlerRoutes() {
                 val behandler: TsmBehandler? =
                     when (query) {
                         is BehandlerQuery.FnrQuery -> {
-                            behandlerRepo.getBehandlerByFnr(query.id)
+                            behandlerService.getBehandlerByFnr(query.id)
                         }
                         is BehandlerQuery.HprQuery -> {
-                            behandlerRepo.getBehandlerByHpr(query.id)
+                            behandlerService.getBehandlerByHpr(query.id)
                         }
                     }
 

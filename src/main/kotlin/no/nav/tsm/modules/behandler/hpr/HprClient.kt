@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.utils.io.core.*
 import io.ktor.utils.io.jvm.javaio.*
 import java.util.zip.ZipInputStream
 import kotlinx.coroutines.Dispatchers
@@ -22,13 +23,34 @@ class HprClient(
     private val hprTokenClient: HprTokenClient,
     private val httpClient: HttpClient,
     environment: Environment,
-    private val hprUrl: String = environment.hprExportUrl,
+    private val hprEndpoint: String = environment.hprEndpoint,
 ) {
     private val jsonFactory = JsonFactoryBuilder().disable(StreamReadFeature.AUTO_CLOSE_SOURCE).build()
 
+    suspend fun getBehandler(hpr: String): Behandler? {
+        val token = hprTokenClient.token()
+
+        val response =
+            httpClient.get("$hprEndpoint/v1/personerutvidet/$hpr") {
+                bearerAuth(token)
+            }
+
+        if(response.status == HttpStatusCode.NotFound) {
+            return null
+        }
+
+        if (!response.status.isSuccess()) {
+            throw RuntimeException("Feil ved oppslag til behandler ${response.status.value}")
+        }
+
+        return response.bodyAsBytes().let {
+            behandlerObjectMapper.readValue(it, Behandler::class.java)
+        }
+    }
+
     fun getExport(): Flow<Behandler> = flow {
         val token = hprTokenClient.token()
-        val response = httpClient.get(hprUrl) { bearerAuth(token) }
+        val response = httpClient.get("$hprEndpoint/v1/export") { bearerAuth(token) }
 
         if (!response.status.isSuccess()) {
             throw RuntimeException("Could not get export from hpr: ${response.status}")

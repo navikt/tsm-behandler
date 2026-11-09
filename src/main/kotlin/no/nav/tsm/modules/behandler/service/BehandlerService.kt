@@ -7,17 +7,33 @@ import no.nav.tsm.modules.behandler.api.models.TsmBehandlerKode
 import no.nav.tsm.modules.behandler.api.models.TsmBehandlerTilleggskompetanse
 import no.nav.tsm.modules.behandler.api.models.TsmGodkjenning
 import no.nav.tsm.modules.behandler.api.models.TsmPeriode
+import no.nav.tsm.modules.behandler.hpr.HprClient
 import no.nav.tsm.modules.behandler.models.Behandler
 import no.nav.tsm.modules.behandler.models.isActive
 import no.nav.tsm.modules.behandler.models.isSuspendert
 import no.nav.tsm.modules.behandler.models.toNavn
 
-class BehandlerService(private val behandlerRepo: BehandlerRepo) {
+class BehandlerService(private val behandlerRepo: BehandlerRepo, private val hprClient: HprClient) {
 
     private val log = logger()
 
     suspend fun getBehandlerByHpr(hprNummer: String): TsmBehandler? {
-        return behandlerRepo.getBehandlerByHpr(hprNummer)?.toTsmBehandler()
+        val behandler = behandlerRepo.getBehandlerByHpr(hprNummer)?.toTsmBehandler()
+        if (behandler != null) return behandler
+
+        val updatedBehandler = hprClient.getBehandler(hprNummer)
+
+        if (updatedBehandler == null) {
+            log.info("Behandler $hprNummer does not exists in hpr")
+            return null
+        }
+
+        if (updatedBehandler.person.nin == null) {
+            log.info("hprNumber $hprNummer does not have an ident in hpr")
+            return null
+        }
+        behandlerRepo.save(updatedBehandler)
+        return updatedBehandler.toTsmBehandler()
     }
 
     suspend fun getBehandlerByFnr(fnr: String): TsmBehandler? {

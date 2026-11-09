@@ -12,7 +12,7 @@ sealed interface HprTokenClient {
     }
 
     class Remote(private val texas: Texas) : HprTokenClient {
-        val scope = "nhn:hpr/export"
+        val scope = "nhn:hpr/export nhn:hpr/extended"
 
         override suspend fun token(): String {
             return texas.maskinporten(scope).token

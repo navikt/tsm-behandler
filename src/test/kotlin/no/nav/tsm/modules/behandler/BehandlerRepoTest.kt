@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -74,27 +73,6 @@ class BehandlerRepoTest {
         assertFalse(repo.hasData())
         assertNull(repo.getBehandlerByHpr("7"))
         assertNull(repo.getBehandlerByFnr("12345678910"))
-    }
-
-    @Test
-    fun `new import updates existing and deletes those that are gone`() = runBlocking {
-        val firstImport = OffsetDateTime.now()
-        repo.saveAll(
-            listOf(behandler("1", nin = "11111111111"), behandler("2", nin = "22222222222")),
-            firstImport,
-        )
-        assertTrue(repo.hasData())
-        assertNotNull(repo.getBehandlerByHpr("1"))
-        assertNotNull(repo.getBehandlerByFnr("22222222222"))
-
-        val secondImport = firstImport.plusHours(1)
-        repo.saveAll(listOf(behandler("1", nin = "11111111111")), secondImport)
-        val deleted = repo.deleteRemoved(secondImport)
-
-        assertEquals(1, deleted)
-        assertNotNull(repo.getBehandlerByHpr("1"))
-        assertNull(repo.getBehandlerByHpr("2"))
-        assertNull(repo.getBehandlerByFnr("22222222222"))
     }
 
     @Test

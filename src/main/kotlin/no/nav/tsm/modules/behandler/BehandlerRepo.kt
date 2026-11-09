@@ -2,6 +2,7 @@ package no.nav.tsm.modules.behandler
 
 import java.sql.Connection
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.sql.DataSource
 import kotlinx.coroutines.Dispatchers
@@ -14,12 +15,7 @@ import no.nav.tsm.modules.behandler.models.isSuspendert
 import org.jetbrains.exposed.v1.core.SortOrder
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.intLiteral
-import org.jetbrains.exposed.v1.core.less
-import org.jetbrains.exposed.v1.jdbc.Database
-import org.jetbrains.exposed.v1.jdbc.batchUpsert
-import org.jetbrains.exposed.v1.jdbc.deleteWhere
-import org.jetbrains.exposed.v1.jdbc.select
-import org.jetbrains.exposed.v1.jdbc.selectAll
+import org.jetbrains.exposed.v1.jdbc.*
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class BehandlerRepo(
@@ -122,10 +118,18 @@ class BehandlerRepo(
         }
     }
 
-    suspend fun deleteRemoved(importStart: OffsetDateTime): Int =
+    suspend fun save(behandler: Behandler) {
         withContext(Dispatchers.IO) {
             transaction(db = database) {
-                HprBehandlerTable.deleteWhere { oppdatert less importStart }
+                HprBehandlerTable.upsert {
+                    it[HprBehandlerTable.hprNummer] = normaliserHprNummer(behandler.hprNummer)
+                    it[HprBehandlerTable.fnr] = behandler.person.nin
+                    it[HprBehandlerTable.sistOppdatert] = behandler.sistOppdatert
+                    it[HprBehandlerTable.suspendert] = behandler.isSuspendert()
+                    it[HprBehandlerTable.data] = behandler
+                    it[HprBehandlerTable.oppdatert] = OffsetDateTime.now(ZoneOffset.UTC)
+                }
             }
         }
+    }
 }

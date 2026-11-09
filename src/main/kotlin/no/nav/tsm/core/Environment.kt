@@ -12,7 +12,7 @@ class Runtime(
 
 class Environment(
     val runtime: Runtime,
-    val hprExportUrl: String,
+    val hprEndpoint: String,
     val postgres: PostgresConfig,
 )
 
@@ -30,7 +30,7 @@ fun Application.initEnv() =
                 name = environment.config.property("app.name").getAs(),
                 env = getRuntimeCluster(),
             ),
-        hprExportUrl = environment.config.property("external.hprExportEndpoint").getAs(),
+        hprEndpoint = environment.config.property("external.hprExportEndpoint").getAs(),
         postgres =
             PostgresConfig(
                 jdbc = environment.config.property("postgres.jdbc").getString(),
