@@ -66,7 +66,7 @@ fun Application.registerBehandlerRoutes() {
             post("api/behandler/search") {
                 val query = call.receive<BehandlerQuery>()
                 when (val user = call.onBehalfOfUserMaybe()) {
-                    null -> log.info("Getting behandler by ${query.type} for application-user ${call.getAzp()}")
+                    null -> {}
                     else -> log.info("behalf-of-user for user ${user.email}")
                 }
                 val behandler: TsmBehandler? =

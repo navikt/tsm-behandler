@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import no.nav.tsm.core.Environment
+import no.nav.tsm.ktor.logger
 import no.nav.tsm.modules.behandler.models.Behandler
 import no.nav.tsm.modules.behandler.models.behandlerObjectMapper
 import tools.jackson.core.JsonTokenId
@@ -25,6 +26,8 @@ class HprClient(
     environment: Environment,
     private val hprEndpoint: String = environment.hprEndpoint,
 ) {
+
+    private val log = logger()
     private val jsonFactory = JsonFactoryBuilder().disable(StreamReadFeature.AUTO_CLOSE_SOURCE).build()
 
     suspend fun getBehandler(hpr: String): Behandler? {
@@ -35,11 +38,12 @@ class HprClient(
                 bearerAuth(token)
             }
 
-        if(response.status == HttpStatusCode.NotFound) {
+        if (response.status == HttpStatusCode.NotFound) {
             return null
         }
 
         if (!response.status.isSuccess()) {
+            log.warn("Could not get behandler for hpr $hpr, statuscode: ${response.status.value}")
             throw RuntimeException("Feil ved oppslag til behandler ${response.status.value}")
         }
 
