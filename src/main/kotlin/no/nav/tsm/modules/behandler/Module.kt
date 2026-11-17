@@ -2,7 +2,6 @@ package no.nav.tsm.modules.behandler
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.di.*
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.*
 import no.nav.tsm.ktor.di.dynamicDependencies
 import no.nav.tsm.ktor.logger
@@ -28,42 +27,24 @@ fun Application.configureBehandlerModule() {
 
     registerBehandlerRoutes()
 
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + CoroutineName("BehandlerJob"))
     val behandlerJob: BehandlerJob by dependencies
-    var job: Job? = null
+    configureBehandlerJob(behandlerJob)
+}
 
-    monitor.subscribe(ApplicationStarted) {
-        job = scope.launch {
+internal fun Application.configureBehandlerJob(behandlerJob: BehandlerJob) {
+    val job =
+        launch(Dispatchers.IO + CoroutineName("BehandlerJob"), start = CoroutineStart.LAZY) {
             logger.info("Behandler job started")
             behandlerJob.start()
             logger.info("Behandler job started -> done")
         }
-    }
-
-    var stopped = false
-    fun stopBehandlerJob(event: String) {
-        if (stopped) return
-        stopped = true
-        runBlocking {
-            logger.info("event: $event")
+    dependencies {
+        cleanup<BehandlerJob> {
             behandlerJob.stop()
-            val job = job ?: return@runBlocking
-
-            val joined = withTimeoutOrNull(5.seconds) { job.join() } != null
-            if (joined) {
-                logger.info("job is joined")
-                return@runBlocking
-            }
-
-            logger.warn("behandlerJob did not stop within 5s, cancelling running import")
-            val cancelled = withTimeoutOrNull(5.seconds) { job.cancelAndJoin() } != null
-            if (!cancelled) {
-                logger.error("behandlerJob did not respond to cancellation within 5s")
-            }
-            scope.cancel()
+            runBlocking { job.cancelAndJoin() }
         }
     }
-
-    monitor.subscribe(ApplicationStopPreparing) { stopBehandlerJob("ApplicationStopPreparing") }
-    monitor.subscribe(ApplicationStopping) { stopBehandlerJob("ApplicationStopping") }
+    monitor.subscribe(ApplicationStarted) { application ->
+        if (application == this) job.start()
+    }
 }
