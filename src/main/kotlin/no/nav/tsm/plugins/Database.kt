@@ -17,13 +17,10 @@ fun Application.configureDatabase() {
 
     getFlyway(env.postgres).migrate()
 
-    val jdbcDataSource = createHikariDataSource(env.postgres)
-    val jdbcDatabase = Database.connect(jdbcDataSource)
-
-    monitor.subscribe(ApplicationStopped) { jdbcDataSource.close() }
-
-    dependencies { provide<Database> { jdbcDatabase } }
-    dependencies { provide<DataSource> { jdbcDataSource } }
+    dependencies {
+        provide<DataSource> { createHikariDataSource(env.postgres) }
+        provide<Database> { Database.connect(resolve<DataSource>()) }
+    }
 }
 
 private fun createHikariDataSource(postgresConfig: PostgresConfig) =
