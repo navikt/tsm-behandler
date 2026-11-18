@@ -1,0 +1,19 @@
+apiVersion: nais.io/v1
+kind: Naisjob
+metadata:
+  name: tsm-behandler-db-migration
+  namespace: tsm
+  labels:
+    team: tsm
+spec:
+  uses:
+    postgres:
+      - name: tsm-behandler-postgres
+  backoffLimit: 1
+  restartPolicy: Never
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi

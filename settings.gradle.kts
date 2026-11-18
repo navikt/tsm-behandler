@@ -29,3 +29,5 @@ dependencyResolutionManagement {
     }
 }
 
+
+include("nais-jobs:db-migration")
