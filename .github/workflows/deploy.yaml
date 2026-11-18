@@ -3,8 +3,10 @@ on:
     branches-ignore:
       - 'dependabot/**'
     paths-ignore:
-      - '.github/workflows/postgres.yaml'
-      - '.nais/postgres.yaml'
+      - '.github/workflows/postgres.yml'
+      - '.nais/postgres**'
+      - 'nais-jobs/**'
+      - '.github/workflows/db-migration.yaml'
 
 permissions:
   actions: read

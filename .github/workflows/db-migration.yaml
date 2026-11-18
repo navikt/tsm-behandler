@@ -1,0 +1,58 @@
+name: Deploy db migration job
+on:
+  push:
+    branches-ignore:
+      - 'dependabot/**'
+    paths:
+      - 'nais-jobs/db-migration/**'
+      - '.github/workflows/db-migration.yaml'
+      - 'gradle/**'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@v5
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Test with Gradle
+        shell: bash
+        run: ./gradlew :nais-jobs:db-migration:test
+      - name: Build with Gradle
+        shell: bash
+        run: ./gradlew :nais-jobs:db-migration:shadowJar
+      - name: Build and publish docker image
+        uses: nais/docker-build-push@v0
+        id: build
+        with:
+          team: tsm
+          salsa: false
+          docker_context: 'nais-jobs/db-migration'
+          image_suffix: db-migration
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+
+  sbom:
+    name: Upload SBOM for build
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: navikt/tsm-workflows/actions/attest-sign@main
+        with:
+          image_ref: ${{ needs.build.outputs.image }}
+          team: tsm
+
+  deploy-dev:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: nais/deploy/actions/deploy@v3
+        env:
+          CLUSTER: "dev-gcp"
+          RESOURCE: "nais-jobs/db-migration/.nais/naisjob.yaml"
+          WORKLOAD_IMAGE: ${{ needs.build.outputs.image }}

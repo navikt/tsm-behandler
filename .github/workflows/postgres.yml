@@ -2,7 +2,7 @@ name: Deploy postgres
 on:
   push:
     paths:
-      - '.github/workflows/postgres.yaml'
+      - '.github/workflows/postgres.yml'
       - '.nais/postgres-dev.yaml'
       - '.nais/postgres-prod.yaml'
 
