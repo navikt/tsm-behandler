@@ -1,0 +1,36 @@
+name: Deploy postgres
+on:
+  push:
+    paths:
+      - '.github/workflows/postgres.yaml'
+      - '.nais/postgres-dev.yaml'
+      - '.nais/postgres-prod.yaml'
+
+permissions:
+  contents: read
+  id-token: write
+
+
+jobs:
+  deploy-postgres-dev:
+    name: Deploy postgres to dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: nais/setup@v1
+        with:
+          team: tsm
+          environment: dev-gcp
+      - run: nais apply .nais/postgres-dev.yaml
+
+  deploy-postgres-prod:
+    if: github.ref_name == 'main'
+    needs: deploy-postgres-dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: nais/setup@v1
+        with:
+          team: tsm
+          environment: prod-gcp
+      - run: nais apply .nais/postgres-prod.yaml
