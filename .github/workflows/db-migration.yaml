@@ -51,8 +51,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: nais/deploy/actions/deploy@v3
-        env:
-          CLUSTER: "dev-gcp"
-          RESOURCE: "nais-jobs/db-migration/.nais/naisjob.yaml"
-          WORKLOAD_IMAGE: ${{ needs.build.outputs.image }}
+      - uses: nais/setup@v1
+        with:
+          team: tsm
+          environment: dev-gcp
+      - name: Deploy to dev
+        run: |
+          nais apply nais-jobs/db-migration/.nais/naisjob.yaml \
+            --set spec.image="${{ needs.build.outputs.image }}"
+
+
+  deploy-prod:
+    if: github.ref_name == 'main'
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: nais/setup@v1
+        with:
+          team: tsm
+          environment: prod-gcp
+      - name: Deploy to prod
+        run: |
+          nais apply nais-jobs/db-migration/.nais/naisjob.yaml \
+            --set spec.image="${{ needs.build.outputs.image }}"
