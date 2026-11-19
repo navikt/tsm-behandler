@@ -5,7 +5,8 @@ on:
     paths-ignore:
       - '.github/workflows/postgres.yml'
       - '.nais/postgres**'
-      - 'nais-jobs/**'
+      - 'db-migration/**'
+      - 'hpr-import/**'
       - '.github/workflows/db-migration.yaml'
 
 permissions:
