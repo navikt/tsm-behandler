@@ -4,7 +4,7 @@ on:
     branches-ignore:
       - 'dependabot/**'
     paths:
-      - 'nais-jobs/db-migration/**'
+      - 'db-migration/**'
       - '.github/workflows/db-migration.yaml'
       - 'gradle/**'
 
@@ -21,17 +21,17 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6
       - name: Test with Gradle
         shell: bash
-        run: ./gradlew :nais-jobs:db-migration:test
+        run: ./gradlew :db-migration:test
       - name: Build with Gradle
         shell: bash
-        run: ./gradlew :nais-jobs:db-migration:shadowJar
+        run: ./gradlew :db-migration:shadowJar
       - name: Build and publish docker image
         uses: nais/docker-build-push@v0
         id: build
         with:
           team: tsm
           salsa: false
-          docker_context: 'nais-jobs/db-migration'
+          docker_context: 'db-migration'
           image_suffix: db-migration
     outputs:
       image: ${{ steps.build.outputs.image }}
@@ -57,7 +57,7 @@ jobs:
           environment: dev-gcp
       - name: Deploy to dev
         run: |
-          nais apply nais-jobs/db-migration/.nais/naisjob.yaml \
+          nais apply .nais/db-migration-nais-job.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
 
 
@@ -73,5 +73,5 @@ jobs:
           environment: prod-gcp
       - name: Deploy to prod
         run: |
-          nais apply nais-jobs/db-migration/.nais/naisjob.yaml \
+          nais apply .nais/db-migration-nais-job.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"

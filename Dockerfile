@@ -2,7 +2,7 @@ FROM gcr.io/distroless/java25-debian13@sha256:aea9b7c0ab3605df2a08bb71e865c9ddb5
 
 WORKDIR /app
 
-COPY build/libs/tsm-behandler-all.jar app.jar
+COPY app/build/libs/tsm-behandler-all.jar app.jar
 
 ENV JAVA_OPTS="-Dlogback.configurationFile=logback.xml"
 ENV TZ="Europe/Oslo"
