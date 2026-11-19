@@ -29,5 +29,7 @@ dependencyResolutionManagement {
     }
 }
 
-
-include("nais-jobs:db-migration")
+include(":app")
+include(":db-migration")
+include(":hpr-import")
+include(":shared")
