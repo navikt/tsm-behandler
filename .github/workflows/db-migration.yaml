@@ -57,7 +57,7 @@ jobs:
           environment: dev-gcp
       - name: Deploy to dev
         run: |
-          nais apply db-migration/.nais/naisjob.yaml \
+          nais apply .nais/db-migration-nais-job.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
 
 
@@ -73,5 +73,5 @@ jobs:
           environment: prod-gcp
       - name: Deploy to prod
         run: |
-          nais apply db-migration/.nais/naisjob.yaml \
+          nais apply .nais/db-migration-nais-job.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
