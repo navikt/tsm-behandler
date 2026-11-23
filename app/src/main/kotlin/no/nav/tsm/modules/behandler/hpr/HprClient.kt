@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import no.nav.tsm.core.Environment
 import no.nav.tsm.ktor.logger
+import no.nav.tsm.modules.behandler.behandlerObjectMapper
 import no.nav.tsm.modules.behandler.models.Behandler
-import no.nav.tsm.modules.behandler.models.behandlerObjectMapper
 import tools.jackson.core.JsonTokenId
 import tools.jackson.core.ObjectReadContext
 import tools.jackson.core.StreamReadFeature

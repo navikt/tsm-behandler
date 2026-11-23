@@ -1,6 +1,5 @@
 package no.nav.tsm.modules.behandler.api
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.ktor.http.*
@@ -16,18 +15,8 @@ import io.ktor.server.routing.*
 import no.nav.tsm.ktor.auth.entra.entraBoth
 import no.nav.tsm.ktor.auth.entra.obo.onBehalfOfUserMaybe
 import no.nav.tsm.modules.behandler.api.models.TsmBehandler
+import no.nav.tsm.modules.behandler.behandlerObjectMapper
 import no.nav.tsm.modules.behandler.service.BehandlerService
-import tools.jackson.databind.DeserializationFeature
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.KotlinFeature
-import tools.jackson.module.kotlin.KotlinModule
-
-private val behandlerApiMapper =
-    JsonMapper.builder()
-        .addModule(KotlinModule.Builder().enable(KotlinFeature.StrictNullChecks).build())
-        .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
-        .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
-        .build()
 
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
@@ -60,7 +49,7 @@ fun Application.registerBehandlerRoutes() {
 
     routing {
         install(ContentNegotiation) {
-            register(ContentType.Application.Json, JacksonConverter(behandlerApiMapper))
+            register(ContentType.Application.Json, JacksonConverter(behandlerObjectMapper))
         }
         entraBoth {
             post("api/behandler/search") {

@@ -1,15 +1,8 @@
 package no.nav.tsm.modules.behandler.models
 
-import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import no.nav.tsm.ktor.core.Navn
-import no.nav.tsm.ktor.core.SimpleNavn
-import tools.jackson.databind.DeserializationFeature
-import tools.jackson.databind.json.JsonMapper
-import tools.jackson.module.kotlin.KotlinFeature
-import tools.jackson.module.kotlin.KotlinModule
 
 private val GODKJENNING_SUSPENSJONS_VERDIER = setOf("1", "5", "8")
 
@@ -28,11 +21,15 @@ data class Person(
     val etternavn: String?,
 )
 
-fun Person.toNavn(): Navn? {
+data class Navn(
+    val fornavn: String,
+    val mellomnavn: String?,
+    val etternavn: String,
+)
 
-    if (fornavn == null) return null
-    if (etternavn == null) return null
-    return SimpleNavn(
+fun Person.toNavn(): Navn? {
+    if (fornavn == null || etternavn == null) return null
+    return Navn(
         fornavn = fornavn,
         mellomnavn = mellomnavn,
         etternavn = etternavn,
@@ -93,13 +90,6 @@ data class Kodeverk(
     val id: String,
     val navn: String,
 )
-
-val behandlerObjectMapper =
-    JsonMapper.builder()
-        .addModule(KotlinModule.Builder().enable(KotlinFeature.StrictNullChecks).build())
-        .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
-        .changeDefaultPropertyInclusion { it.withValueInclusion(JsonInclude.Include.NON_NULL) }
-        .build()
 
 private fun Periode.isActive(date: LocalDate = LocalDate.now(ZoneId.of("Europe/Oslo"))): Boolean {
     return date in fra..(til ?: date)

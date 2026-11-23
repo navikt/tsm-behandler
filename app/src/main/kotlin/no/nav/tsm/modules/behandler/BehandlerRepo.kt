@@ -80,6 +80,7 @@ class BehandlerRepo(
                     .limit(1)
                     .firstOrNull()
                     ?.get(HprBehandlerTable.data)
+                    ?.let { behandlerObjectMapper.readValue(it, Behandler::class.java) }
             }
         }
 
@@ -92,6 +93,7 @@ class BehandlerRepo(
                     .limit(1)
                     .firstOrNull()
                     ?.get(HprBehandlerTable.data)
+                    ?.let { behandlerObjectMapper.readValue(it, Behandler::class.java) }
             }
         }
 
@@ -111,7 +113,7 @@ class BehandlerRepo(
                     this[HprBehandlerTable.fnr] = behandler.person.nin
                     this[HprBehandlerTable.sistOppdatert] = behandler.sistOppdatert
                     this[HprBehandlerTable.suspendert] = behandler.isSuspendert()
-                    this[HprBehandlerTable.data] = behandler
+                    this[HprBehandlerTable.data] = behandlerObjectMapper.writeValueAsString(behandler)
                     this[HprBehandlerTable.oppdatert] = importStart
                 }
             }
@@ -126,7 +128,7 @@ class BehandlerRepo(
                     it[HprBehandlerTable.fnr] = behandler.person.nin
                     it[HprBehandlerTable.sistOppdatert] = behandler.sistOppdatert
                     it[HprBehandlerTable.suspendert] = behandler.isSuspendert()
-                    it[HprBehandlerTable.data] = behandler
+                    it[HprBehandlerTable.data] = behandlerObjectMapper.writeValueAsString(behandler)
                     it[HprBehandlerTable.oppdatert] = OffsetDateTime.now(ZoneOffset.UTC)
                 }
             }

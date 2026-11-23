@@ -5,6 +5,7 @@ on:
       - 'dependabot/**'
     paths:
       - 'db-migration/**'
+      - '.nais/db-migration.yaml'
       - '.github/workflows/db-migration.yaml'
       - 'gradle/**'
 
@@ -57,7 +58,7 @@ jobs:
           environment: dev-gcp
       - name: Deploy to dev
         run: |
-          nais apply .nais/db-migration-nais-job.yaml \
+          nais apply .nais/db-migration.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
 
 
@@ -73,5 +74,5 @@ jobs:
           environment: prod-gcp
       - name: Deploy to prod
         run: |
-          nais apply .nais/db-migration-nais-job.yaml \
+          nais apply .nais/db-migration.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"

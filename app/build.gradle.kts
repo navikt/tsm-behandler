@@ -20,6 +20,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":shared"))
     implementation(ktorLibs.server.core)
     implementation(ktorLibs.server.netty)
     implementation(ktorLibs.server.di)
