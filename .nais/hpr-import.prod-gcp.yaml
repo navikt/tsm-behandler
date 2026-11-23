@@ -1,0 +1,7 @@
+accessPolicy:
+  outbound:
+    external:
+      - host: api.offentlig.hpr.nhn.no
+  env:
+    - name: HPR_EXPORT_ENDPOINT
+      value: https://api.offentlig.hpr.nhn.no

@@ -30,8 +30,3 @@ spec:
       rules:
         - application: logging
           namespace: nais-system
-      external:
-        - host: api.offentlig.test.hpr.nhn.no
-  env:
-    - name: HPR_EXPORT_ENDPOINT
-      value: https://api.offentlig.test.hpr.nhn.no
