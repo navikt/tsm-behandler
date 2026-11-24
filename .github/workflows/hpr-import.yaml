@@ -6,7 +6,7 @@ on:
     paths:
       - 'hpr-import/**'
       - 'shared/**'
-      - '.nais/hpr-import-*.yaml'
+      - '.nais/hpr-import.*.yaml'
       - '.github/workflows/hpr-import.yaml'
       - 'gradle/**'
 
