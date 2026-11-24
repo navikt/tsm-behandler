@@ -6,7 +6,7 @@ metadata:
   labels:
     team: tsm
 spec:
-  schedule: "0 * * * *"
+  schedule: "0 6 * * *"
   concurrencyPolicy: Forbid
   activeDeadlineSeconds: 3600
   uses:
