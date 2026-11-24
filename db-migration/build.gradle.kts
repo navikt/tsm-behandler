@@ -28,6 +28,15 @@ kotlin {
 }
 
 tasks {
+    register<JavaExec>("migrateLocal") {
+        description = "Apply migrations to the local PostgreSQL database"
+        group = "application"
+        dependsOn(":app:preRunLocal")
+        mainClass.set(application.mainClass)
+        classpath = sourceSets["main"].runtimeClasspath
+        environment("PGJDBCURL", "jdbc:postgresql://localhost:7971/tsm-behandler?user=user&password=password")
+    }
+
     shadowJar {
         archiveVersion = ""
         duplicatesStrategy = DuplicatesStrategy.INCLUDE

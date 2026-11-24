@@ -5,7 +5,7 @@ import no.nav.tsm.ktor.auth.texas.Texas
 sealed interface HprTokenClient {
     suspend fun token(): String
 
-    data object Local : HprTokenClient {
+    class Local : HprTokenClient {
         override suspend fun token(): String {
             return "token"
         }

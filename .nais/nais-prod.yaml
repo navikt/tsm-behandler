@@ -21,6 +21,9 @@ spec:
         insights:
           enabled: true
         tier: db-custom-1-3840
+  uses:
+    postgres:
+      - name: tsm-behandler-postgres
   port: 8080
   replicas:
     min: 2

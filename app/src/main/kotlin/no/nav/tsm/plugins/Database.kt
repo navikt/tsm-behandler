@@ -24,7 +24,6 @@ private fun createHikariDataSource(postgresConfig: PostgresConfig) =
     HikariDataSource(
         HikariConfig().apply {
             jdbcUrl = postgresConfig.jdbc
-            schema = postgresConfig.schema
             poolName = "tsm-behandler-jdbc"
             maximumPoolSize = 10
             minimumIdle = 2

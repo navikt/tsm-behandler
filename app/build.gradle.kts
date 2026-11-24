@@ -91,6 +91,6 @@ tasks {
 
         args("-config=application-local.conf")
         jvmArgs("-Dio.ktor.development=true", "-Dlogback.configurationFile=logback-local.xml")
-        dependsOn("preRunLocal")
+        dependsOn(":db-migration:migrateLocal")
     }
 }
