@@ -2,40 +2,23 @@ package no.nav.tsm.core
 
 import io.ktor.server.application.*
 import io.ktor.server.config.*
-import no.nav.tsm.ktor.nais.RuntimeCluster
-import no.nav.tsm.ktor.nais.getRuntimeCluster
-
-class Runtime(
-    val name: String,
-    val env: RuntimeCluster,
-)
 
 class Environment(
-    val runtime: Runtime,
     val hprEndpoint: String,
     val postgres: PostgresConfig,
 )
 
 class PostgresConfig(
     val jdbc: String,
-    val username: String,
-    val password: String,
     val schema: String,
 )
 
 fun Application.initEnv() =
     Environment(
-        runtime =
-            Runtime(
-                name = environment.config.property("app.name").getAs(),
-                env = getRuntimeCluster(),
-            ),
         hprEndpoint = environment.config.property("external.hprExportEndpoint").getAs(),
         postgres =
             PostgresConfig(
                 jdbc = environment.config.property("postgres.jdbc").getString(),
-                username = environment.config.property("postgres.username").getString(),
-                password = environment.config.property("postgres.password").getString(),
                 schema = environment.config.property("postgres.schema").getString(),
             ),
     )

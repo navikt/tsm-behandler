@@ -1,24 +1,15 @@
 package no.nav.tsm.modules.core.util
 
-import no.nav.tsm.core.PostgresConfig
-import no.nav.tsm.core.db.getFlyway
+import no.nav.tsm.db.migrate
 import org.testcontainers.postgresql.PostgreSQLContainer
 
 class PostgresTestcontainer {
-    val postgres = PostgreSQLContainer("postgres:17-alpine").apply { start() }
-    val username: String = postgres.username
-    val password: String = postgres.password
-    val url: String = postgres.jdbcUrl
+    val postgres = PostgreSQLContainer("postgres:18-alpine").apply { start() }
+    val url: String = "${postgres.jdbcUrl}&user=${postgres.username}&password=${postgres.password}"
 
     init {
-        getFlyway(
-                PostgresConfig(
-                    jdbc = url,
-                    username = username,
-                    password = password,
-                    schema = "public",
-                ),
-            )
-            .migrate()
+        migrate(
+            jdbcUrl = url,
+        )
     }
 }

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import io.ktor.http.*
 import io.ktor.serialization.jackson3.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.di.*
 import io.ktor.server.request.*
@@ -77,8 +75,4 @@ fun Application.registerBehandlerRoutes() {
             }
         }
     }
-}
-
-private fun RoutingCall.getAzp(): String? {
-    return principal<JWTPrincipal>()?.get("azp_name")
 }

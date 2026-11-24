@@ -9,13 +9,10 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import no.nav.tsm.core.Environment
 import no.nav.tsm.core.PostgresConfig
-import no.nav.tsm.core.db.getFlyway
 import org.jetbrains.exposed.v1.jdbc.Database
 
 fun Application.configureDatabase() {
     val env: Environment by dependencies
-
-    getFlyway(env.postgres).migrate()
 
     dependencies {
         provide<DataSource> { createHikariDataSource(env.postgres) }
@@ -27,8 +24,6 @@ private fun createHikariDataSource(postgresConfig: PostgresConfig) =
     HikariDataSource(
         HikariConfig().apply {
             jdbcUrl = postgresConfig.jdbc
-            username = postgresConfig.username
-            password = postgresConfig.password
             schema = postgresConfig.schema
             poolName = "tsm-behandler-jdbc"
             maximumPoolSize = 10

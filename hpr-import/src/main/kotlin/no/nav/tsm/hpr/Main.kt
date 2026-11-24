@@ -9,7 +9,7 @@ import org.jetbrains.exposed.v1.jdbc.Database
 private val CONNECT_TIMEOUT = Duration.ofSeconds(60)
 
 fun main() {
-    val jdbcUrl = System.getenv("PGJDBCURL")
+    val jdbcUrl = System.getenv("READWRITE_PGJDBCURL")
     val hprEndpoint = System.getenv("HPR_EXPORT_ENDPOINT")
     val tokenEndpoint = System.getenv("NAIS_TOKEN_ENDPOINT")
 

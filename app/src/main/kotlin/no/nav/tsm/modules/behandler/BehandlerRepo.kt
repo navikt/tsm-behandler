@@ -1,12 +1,9 @@
 package no.nav.tsm.modules.behandler
 
-import java.sql.Connection
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.sql.DataSource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import no.nav.tsm.modules.behandler.db.HprBehandlerTable
 import no.nav.tsm.modules.behandler.db.normaliserHprNummer
@@ -20,41 +17,8 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 
 class BehandlerRepo(
     private val database: Database,
-    private val dataSource: DataSource,
 ) {
-    private companion object {
-        const val IMPORT_LOCK_ID = 13_69_420_37L
-    }
-
     private val hasData = AtomicBoolean(false)
-
-    suspend fun <T> tryWithImportLock(block: suspend () -> T): T? {
-        val connection = dataSource.connection
-        try {
-            val lock = withContext(Dispatchers.IO) { connection.tryAcquireImportLock() }
-            if (!lock) return null
-            try {
-                return block()
-            } finally {
-                withContext(NonCancellable + Dispatchers.IO) { connection.releaseImportLock() }
-            }
-        } finally {
-            withContext(NonCancellable + Dispatchers.IO) { connection.close() }
-        }
-    }
-
-    private fun Connection.tryAcquireImportLock(): Boolean =
-        prepareStatement("select pg_try_advisory_lock(?)").use { statement ->
-            statement.setLong(1, IMPORT_LOCK_ID)
-            statement.executeQuery().use { rs -> rs.next() && rs.getBoolean(1) }
-        }
-
-    private fun Connection.releaseImportLock() {
-        prepareStatement("select pg_advisory_unlock(?)").use { statement ->
-            statement.setLong(1, IMPORT_LOCK_ID)
-            statement.executeQuery().close()
-        }
-    }
 
     suspend fun hasData(): Boolean {
         if (hasData.get()) return true
@@ -96,29 +60,6 @@ class BehandlerRepo(
                     ?.let { behandlerObjectMapper.readValue(it, Behandler::class.java) }
             }
         }
-
-    suspend fun saveAll(
-        behandlers: List<Behandler>,
-        importStart: OffsetDateTime,
-    ) {
-        if (behandlers.isEmpty()) return
-        withContext(Dispatchers.IO) {
-            transaction(db = database) {
-                HprBehandlerTable.batchUpsert(
-                    behandlers,
-                    HprBehandlerTable.hprNummer,
-                    shouldReturnGeneratedValues = false,
-                ) { behandler ->
-                    this[HprBehandlerTable.hprNummer] = normaliserHprNummer(behandler.hprNummer)
-                    this[HprBehandlerTable.fnr] = behandler.person.nin
-                    this[HprBehandlerTable.sistOppdatert] = behandler.sistOppdatert
-                    this[HprBehandlerTable.suspendert] = behandler.isSuspendert()
-                    this[HprBehandlerTable.data] = behandlerObjectMapper.writeValueAsString(behandler)
-                    this[HprBehandlerTable.oppdatert] = importStart
-                }
-            }
-        }
-    }
 
     suspend fun save(behandler: Behandler) {
         withContext(Dispatchers.IO) {
