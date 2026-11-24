@@ -59,7 +59,7 @@ jobs:
           environment: dev-gcp
       - name: Deploy to dev
         run: |
-          nais apply .nais/hpr-import-dev.yaml \
+          nais apply .nais/hpr-import.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
 
   deploy-prod:
@@ -74,5 +74,5 @@ jobs:
           environment: prod-gcp
       - name: Deploy to prod
         run: |
-          nais apply .nais/hpr-import-prod.yaml \
+          nais apply .nais/hpr-import.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
