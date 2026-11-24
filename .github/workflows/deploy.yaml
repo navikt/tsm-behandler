@@ -31,7 +31,6 @@ jobs:
       - uses: navikt/tsm-workflows/actions/gradle/build@main
         id: build
         with:
-          app: "tsm-behandler"
           team: "tsm"
           salsa: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -73,13 +73,6 @@ data class Rekvisisjonsrett(
     val avsluttetStatus: Type?,
 )
 
-data class SpesialistGodkjenninger(
-    val type: Type,
-    val periode: Periode,
-    val administrativeReaksjoner: List<AdministrativReaksjon>,
-    val avsluttetStatus: Type?,
-)
-
 data class Helsepersonellkategori(
     val navn: String,
     val verdi: String,

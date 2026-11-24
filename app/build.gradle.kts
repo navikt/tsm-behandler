@@ -40,8 +40,6 @@ dependencies {
 
 
     // Database and such
-    implementation(libs.flyway.postgres)
-    implementation(libs.flyway.core)
     implementation(libs.postgresql)
     implementation(libs.hikaricp)
     implementation(exposedLibs.core)
@@ -53,6 +51,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(ktorLibs.server.testHost)
     testImplementation(libs.testcontainers.postgresql)
+    testImplementation(project(":db-migration"))
 }
 
 tasks {

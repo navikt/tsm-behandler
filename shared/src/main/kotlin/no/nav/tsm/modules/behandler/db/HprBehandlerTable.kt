@@ -9,7 +9,7 @@ object HprBehandlerTable : Table("hpr_behandler") {
     val hprNummer = text("hpr_nummer")
     val fnr = text("fnr").nullable()
     val sistOppdatert = datetime("sist_oppdatert")
-    val data = jsonb<String>("data", { it }, { it })
+    val data = jsonb("data", { it }, { it })
     val oppdatert = timestampWithTimeZone("oppdatert")
     val suspendert = bool("suspendert")
     override val primaryKey = PrimaryKey(hprNummer)
