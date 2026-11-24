@@ -15,6 +15,8 @@ dependencies {
     implementation(libs.flyway.postgres)
     implementation(libs.flyway.core)
     implementation(libs.postgresql)
+    runtimeOnly(libs.logback.classic)
+    runtimeOnly(libs.logback.encoder)
     testImplementation(kotlin("test"))
     testImplementation(libs.testcontainers.postgresql)
 }

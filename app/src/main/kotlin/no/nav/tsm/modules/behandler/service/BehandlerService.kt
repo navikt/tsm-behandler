@@ -50,7 +50,7 @@ class BehandlerService(private val behandlerRepo: BehandlerRepo, private val hpr
 
         return TsmBehandler(
             hpr = hprNummer,
-            ident = person.nin,
+            ident = nin,
             navn = person.toNavn(),
             godkjenning =
                 godkjenninger

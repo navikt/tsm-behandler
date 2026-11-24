@@ -6,6 +6,11 @@ metadata:
   labels:
     team: tsm
 spec:
+  accessPolicy:
+    outbound:
+      rules:
+        - application: logging
+          namespace: nais-system
   uses:
     postgres:
       - name: tsm-behandler-postgres

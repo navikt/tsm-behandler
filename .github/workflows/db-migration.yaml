@@ -5,6 +5,7 @@ on:
       - 'dependabot/**'
     paths:
       - 'db-migration/**'
+      - '.nais/db-migration.yaml'
       - '.github/workflows/db-migration.yaml'
       - 'gradle/**'
 
@@ -17,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: jdx/mise-action@v5
+      - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d
       - uses: gradle/actions/setup-gradle@v6
       - name: Test with Gradle
         shell: bash
@@ -57,7 +58,7 @@ jobs:
           environment: dev-gcp
       - name: Deploy to dev
         run: |
-          nais apply .nais/db-migration-nais-job.yaml \
+          nais apply .nais/db-migration.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"
 
 
@@ -73,5 +74,5 @@ jobs:
           environment: prod-gcp
       - name: Deploy to prod
         run: |
-          nais apply .nais/db-migration-nais-job.yaml \
+          nais apply .nais/db-migration.yaml \
             --set spec.image="${{ needs.build.outputs.image }}"

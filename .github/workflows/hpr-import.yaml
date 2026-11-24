@@ -1,0 +1,78 @@
+name: Deploy hpr import job
+on:
+  push:
+    branches-ignore:
+      - 'dependabot/**'
+    paths:
+      - 'hpr-import/**'
+      - 'shared/**'
+      - '.nais/hpr-import-*.yaml'
+      - '.github/workflows/hpr-import.yaml'
+      - 'gradle/**'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: jdx/mise-action@236a21c3b91f5db6d4e174b348674a0f0caac06d
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Test with Gradle
+        shell: bash
+        run: ./gradlew :hpr-import:test
+      - name: Build with Gradle
+        shell: bash
+        run: ./gradlew :hpr-import:shadowJar
+      - name: Build and publish docker image
+        uses: nais/docker-build-push@v0
+        id: build
+        with:
+          team: tsm
+          salsa: false
+          docker_context: 'hpr-import'
+          image_suffix: hpr-import
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+
+  sbom:
+    name: Upload SBOM for build
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: navikt/tsm-workflows/actions/attest-sign@main
+        with:
+          image_ref: ${{ needs.build.outputs.image }}
+          team: tsm
+
+  deploy-dev:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: nais/setup@v1
+        with:
+          team: tsm
+          environment: dev-gcp
+      - name: Deploy to dev
+        run: |
+          nais apply .nais/hpr-import.yaml \
+            --set spec.image="${{ needs.build.outputs.image }}"
+
+  deploy-prod:
+    if: github.ref_name == 'main'
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: nais/setup@v1
+        with:
+          team: tsm
+          environment: prod-gcp
+      - name: Deploy to prod
+        run: |
+          nais apply .nais/hpr-import.yaml \
+            --set spec.image="${{ needs.build.outputs.image }}"

@@ -3,6 +3,7 @@
 jvmVersion = "25"
 
 kotlin = "2.4.21"
+jackson = "3.2.2"
 logback = "1.6.5"
 logbackEncoder = "9.0"
 mockk = "1.14.11"
@@ -15,6 +16,7 @@ ktfmt = "0.65"
 
 
 [libraries]
+jackson-module-kotlin = { module = "tools.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logback-encoder = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logbackEncoder" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }

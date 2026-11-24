@@ -1,7 +1,7 @@
 package no.nav.tsm.modules.behandler.api.models
 
 import java.time.LocalDate
-import no.nav.tsm.ktor.core.Navn
+import no.nav.tsm.modules.behandler.models.Navn
 
 data class TsmBehandler(
     val hpr: String,
