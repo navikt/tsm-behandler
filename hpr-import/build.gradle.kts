@@ -13,6 +13,7 @@ application {
 
 dependencies {
     implementation(project(":shared"))
+    implementation(libs.bigquery)
     implementation(libs.jackson.module.kotlin)
     implementation(libs.hikaricp)
     implementation(libs.postgresql)

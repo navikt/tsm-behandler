@@ -8,6 +8,10 @@ metadata:
 spec:
   schedule: "0 6 * * *"
   concurrencyPolicy: Forbid
+  gcp:
+    bigQueryDatasets:
+      - name: tsm_behandler
+        permission: READWRITE
   activeDeadlineSeconds: 3600
   uses:
     postgres:
