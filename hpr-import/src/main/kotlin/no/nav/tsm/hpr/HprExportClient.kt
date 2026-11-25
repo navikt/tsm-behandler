@@ -1,12 +1,10 @@
 package no.nav.tsm.hpr
 
-import java.io.InputStream
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.file.Files
-import java.nio.file.StandardOpenOption
 import org.slf4j.LoggerFactory
 
 class HprExportClient(
@@ -22,7 +20,7 @@ class HprExportClient(
 
     private val logger = LoggerFactory.getLogger(HprExportClient::class.java)
 
-    fun download(): InputStream {
+    fun withDownloadedExport(process: (HprExport) -> Unit) {
         val request =
             HttpRequest.newBuilder(URI.create("$hprEndpoint/v1/export"))
                 .header("Authorization", "Bearer ${tokenClient.token()}")
@@ -36,10 +34,9 @@ class HprExportClient(
                 throw IllegalStateException("Could not get export from hpr: ${response.statusCode()}")
             }
             logger.info("Export downloaded: ${Files.size(exportFile) / BYTES_PER_MB} MB")
-            return Files.newInputStream(exportFile, StandardOpenOption.DELETE_ON_CLOSE)
-        } catch (e: Exception) {
+            process(HprExport(exportFile))
+        } finally {
             Files.deleteIfExists(exportFile)
-            throw e
         }
     }
 }
