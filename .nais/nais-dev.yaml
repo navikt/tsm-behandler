@@ -5,21 +5,8 @@ metadata:
   namespace: tsm
   labels:
     team: tsm
+
 spec:
-  gcp:
-    sqlInstances:
-      - type: POSTGRES_17
-        name: tsm-behandler
-        cascadingDelete: false
-        databases:
-          - name: tsm-behandler
-            envVarPrefix: DB
-        diskAutoresize: true
-        highAvailability: false
-        diskType: SSD
-        insights:
-          enabled: true
-        tier: db-f1-micro
   port: 8080
   uses:
     postgres:
@@ -29,10 +16,8 @@ spec:
     max: 1
   resources:
     requests:
-      cpu: 100m
-      memory: 1500Mi
-    limits:
-      memory: 2Gi
+      cpu: 50m
+      memory: 512Mi
 
   liveness:
     path: /internal/health/alive
@@ -56,8 +41,6 @@ spec:
     scopes:
       consumes:
         - name: "nhn:hpr/extended"
-        - name: "nhn:hpr/export"
-        - name: "nhn:flr/export"
   accessPolicy:
     inbound:
       rules:
