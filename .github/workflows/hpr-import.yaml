@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: ./gradlew :hpr-import:shadowJar
       - name: Build and publish docker image
-        uses: nais/docker-build-push@v0
+        uses: nais/docker-build-push@v1
         id: build
         with:
           team: tsm
